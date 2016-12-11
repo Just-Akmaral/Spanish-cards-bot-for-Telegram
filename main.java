@@ -1,8 +1,9 @@
 package main;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.io.*;
+
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -16,7 +17,12 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 
 public class main extends TelegramLongPollingBot {
 
-    public static void Main(String[] args) {
+    public static final String commmand_1 = "Начать";
+    public static final String commmand_2 = "Закончить";
+    public static final String commmand_3 = "Результаты";
+    public static final  String commmand_4 = "Помощь";
+
+    public static void main(String[] args) {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
@@ -40,35 +46,73 @@ public class main extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
             Message message = update.getMessage();
             if (message != null && message.hasText()) {
+                boolean isStart = false;
                 switch (message.getText()) {
                     case "/start":
-                        sendMsg(message, "Добро пожаловать!\n" //
+                        sendMsg(message,  "Добро пожаловать!\n" //
                                 + "Комманды: \n" //
-                                + "Начать\n" //
-                                + "Закончить\n"//
-                                + "Результаты\n" //
-                                + "Помощь\n"//
+                                + commmand_1+"\n" //
+                                + commmand_2+"\n"//
+                                + commmand_3+"\n" //
+                                + commmand_4+"\n"//
                                 + "\n" //
                                 + "Для удобства, используйте клавиатуру.\n"//
                                 + "Cделано с любовью и болью для экзамена.");
                         break;
-                    case "Начать":
-                        sendMsg(message, "Давайте начнем!");
+                    case commmand_1:
+                        isStart = true;
+                        sendMsg(message,  "Давайте начнем!");
+                        runTest(message);
                         break;
-                    case "Закончить":
+                    case commmand_2:
                         sendMsg(message, "Ну что ж, пора закругляться.");
+                        isStart = false;
                         break;
-                    case "Результаты":
-                        sendMsg(message, "Ваши результаты:");
+                    case commmand_3:
+                        sendMsg(message,"Ваш результат:");
                         break;
-                    case "Помощь":
-                        sendMsg(message, "Пока ничем не могу помочь :(");
+                    case commmand_4:
+                        sendMsg(message, "Пока ничем не могу помочь.");
                         break;
                     default:
                         sendMsg(message, "Не могу разобрать! Сейчас сбегаю за очками!");
                         break;
                 }
             }
+    }
+    private void runTest(Message message) {
+        int count = 5;
+        while (count >0) {
+            sendMsg(message, randomEspanoWord());
+            count--;
+        }
+    }
+
+    private static String randomEspanoWord() {
+
+            HashMap<String, String> cards = new HashMap<String, String>();
+            cards.put("hello","hola");
+            cards.put("goodbye","adiós");
+            cards.put("thank you","gracias");
+            cards.put("good","bueno");
+            cards.put("always","siempre");
+
+            HashMap<Integer, String>  cardsNumber = new HashMap<Integer, String>();
+            int i=0;
+            for (String keyCards : cards.keySet()) {
+                cardsNumber.put(i, keyCards);
+                i++;
+            }
+
+           int wordNumber = (int) (Math.random()*cards.size());
+
+            String englishWord = "";
+            String espanoWord = "";
+
+            englishWord = cardsNumber.get(wordNumber);
+            espanoWord = cards.get(englishWord);
+
+            return espanoWord;
     }
 
     private void sendMsg(Message message, String text) {
@@ -88,14 +132,14 @@ public class main extends TelegramLongPollingBot {
         // Первая строчка клавиатуры
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         // Добавляем кнопки в первую строчку клавиатуры
-        keyboardFirstRow.add("Начать");
-        keyboardFirstRow.add("Закончить");
+        keyboardFirstRow.add(commmand_1);
+        keyboardFirstRow.add(commmand_2);
 
         // Вторая строчка клавиатуры
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         // Добавляем кнопки во вторую строчку клавиатуры
-        keyboardSecondRow.add("Результаты");
-        keyboardSecondRow.add("Помощь");
+        keyboardSecondRow.add(commmand_3);
+        keyboardSecondRow.add(commmand_4);
 
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
