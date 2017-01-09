@@ -17,10 +17,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 
 public class main extends TelegramLongPollingBot {
 
-    public static final String commmand_1 = "Начать";
-    public static final String commmand_2 = "Закончить";
-    public static final String commmand_3 = "Результаты";
-    public static final  String commmand_4 = "Помощь";
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -42,54 +38,84 @@ public class main extends TelegramLongPollingBot {
         return "272029468:AAFQ3Tm0YlM68hIOLHRsiSCW-hmBswxFNvA";
     }
 
+    public static int countWord = 0;
+    public static boolean isStart = false;
 
     public void onUpdateReceived(Update update) {
             Message message = update.getMessage();
+        //    boolean isStart = false;
             if (message != null && message.hasText()) {
-                boolean isStart = false;
                 switch (message.getText()) {
                     case "/start":
-                        sendMsg(message,  "Добро пожаловать!\n" //
+                        onMainMenu(message, "Добро пожаловать!\n" //
                                 + "Комманды: \n" //
-                                + commmand_1+"\n" //
-                                + commmand_2+"\n"//
-                                + commmand_3+"\n" //
-                                + commmand_4+"\n"//
+                                + "Начать" + "\n" //
+                                + "Помощь" + "\n"//
                                 + "\n" //
                                 + "Для удобства, используйте клавиатуру.\n"//
                                 + "Cделано с любовью и болью для экзамена.");
                         break;
-                    case commmand_1:
-                        isStart = true;
-                        sendMsg(message,  "Давайте начнем!");
+                    case "Начать":
+                        onMainMenu(message, "Давайте начнем!");
                         runTest(message);
+                        isStart();
                         break;
-                    case commmand_2:
-                        sendMsg(message, "Ну что ж, пора закругляться.");
-                        isStart = false;
+                    case "Помощь":
+                        onMainMenu(message, "Пока ничем не могу помочь.");
                         break;
-                    case commmand_3:
-                        sendMsg(message,"Ваш результат:");
+                    case "Помню":
+                       if (isStart){
+                            onTestMenu(message, "Очень хорошо!");
+                        countWord();
+                        runTest(message);
+                        }
+                       else {
+                           wrongCommand(message);
+                       }
                         break;
-                    case commmand_4:
-                        sendMsg(message, "Пока ничем не могу помочь.");
+                    case "Не помню":
+                       if (isStart){
+                            onTestMenu(message, "Плохо");
+                        runTest(message);
+                       }
+                       else{
+                           wrongCommand(message);
+                       }
+                        break;
+                    case "Закончить":
+                       if (isStart){
+                            onMainMenu(message, "Ну что ж, пора закругляться. Вы помните " + countWord + " слов(а)");
+                         isStart = false;
+                            countWord = 0;
+                       }
+                       else{
+                           wrongCommand(message);
+                       }
                         break;
                     default:
-                        sendMsg(message, "Не могу разобрать! Сейчас сбегаю за очками!");
+                        onMainMenu(message, "Да-да?");
                         break;
                 }
             }
     }
-    private void runTest(Message message) {
-        int count = 5;
-        while (count >0) {
-            sendMsg(message, randomEspanoWord());
-            count--;
-        }
+    private void runTest(Message message){
+            onTestMenu(message, randomEspanoWord());
+    }
+    private void wrongCommand(Message message){
+            onMainMenu(message, "Вы хотите что-то поломать :(");
+    }
+    //подсчет верных слов
+    private static Integer countWord(){
+        countWord++;
+        return countWord;
+    }
+    private static Boolean isStart(){
+        isStart = true;
+        return isStart;
     }
 
+//вовращает рандомное испанское слово
     private static String randomEspanoWord() {
-
             HashMap<String, String> cards = new HashMap<String, String>();
             cards.put("hello","hola");
             cards.put("goodbye","adiós");
@@ -115,11 +141,13 @@ public class main extends TelegramLongPollingBot {
             return espanoWord;
     }
 
-    private void sendMsg(Message message, String text) {
+
+//клавиатуры
+    private void onMainMenu(Message message, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
 
-        // Создаем клавиуатуру
+        // Создаем клавиатуру
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
@@ -132,14 +160,13 @@ public class main extends TelegramLongPollingBot {
         // Первая строчка клавиатуры
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         // Добавляем кнопки в первую строчку клавиатуры
-        keyboardFirstRow.add(commmand_1);
-        keyboardFirstRow.add(commmand_2);
+        keyboardFirstRow.add("Начать");
 
         // Вторая строчка клавиатуры
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         // Добавляем кнопки во вторую строчку клавиатуры
-        keyboardSecondRow.add(commmand_3);
-        keyboardSecondRow.add(commmand_4);
+
+        keyboardSecondRow.add("Помощь");
 
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
@@ -156,6 +183,40 @@ public class main extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+    private void onTestMenu(Message message, String text) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
 
+        // Создаем клавиатуру
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboad(false);
+
+        // Создаем список строк клавиатуры
+        List<KeyboardRow> keyboard = new ArrayList <>();
+
+        // Первая строчка клавиатуры
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        // Добавляем кнопки в первую строчку клавиатуры
+        keyboardFirstRow.add("Помню");
+        keyboardFirstRow.add("Не помню");
+        keyboardFirstRow.add("Закончить");
+
+        // Добавляем все строчки клавиатуры в список
+        keyboard.add(keyboardFirstRow);
+        // и устанваливаем этот список нашей клавиатуре
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setReplyToMessageId(message.getMessageId());
+        sendMessage.setText(text);
+        try {
+            sendMessage(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
