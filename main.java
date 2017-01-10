@@ -1,19 +1,19 @@
 package main;
 
 
-import java.util.*;
-import java.io.*;
+        import java.util.*;
+        import java.io.*;
 
 
-import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
-import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Message;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
+        import org.telegram.telegrambots.ApiContextInitializer;
+        import org.telegram.telegrambots.exceptions.TelegramApiException;
+        import org.telegram.telegrambots.TelegramBotsApi;
+        import org.telegram.telegrambots.api.methods.send.SendMessage;
+        import org.telegram.telegrambots.api.objects.Message;
+        import org.telegram.telegrambots.api.objects.Update;
+        import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+        import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+        import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 
 public class main extends TelegramLongPollingBot {
 
@@ -42,67 +42,71 @@ public class main extends TelegramLongPollingBot {
     public static boolean isStart = false;
 
     public void onUpdateReceived(Update update) {
-            Message message = update.getMessage();
+        Message message = update.getMessage();
         //    boolean isStart = false;
-            if (message != null && message.hasText()) {
-                switch (message.getText()) {
-                    case "/start":
-                        onMainMenu(message, "Добро пожаловать!\n" //
-                                + "Комманды: \n" //
-                                + "Начать" + "\n" //
-                                + "Помощь" + "\n"//
-                                + "\n" //
-                                + "Для удобства, используйте клавиатуру.\n"//
-                                + "Cделано с любовью и болью для экзамена.");
-                        break;
-                    case "Начать":
-                        onMainMenu(message, "Давайте начнем!");
-                        runTest(message);
-                        isStart();
-                        break;
-                    case "Помощь":
-                        onMainMenu(message, "Пока ничем не могу помочь.");
-                        break;
-                    case "Помню":
-                       if (isStart){
-                            onTestMenu(message, "Очень хорошо!");
+        if (message != null && message.hasText()) {
+            switch (message.getText()) {
+                case "/start":
+                    onMainMenu(message, "Добро пожаловать!\n" //
+                            + "Комманды: \n" //
+                            + "Начать" + "\n" //
+                            + "Помощь" + "\n"//
+                            + "\n" //
+                            + "Для удобства, используйте клавиатуру.\n"//
+                            + "Cделано с любовью и болью для экзамена.");
+                    break;
+                case "Начать":
+                    onMainMenu(message, "Давайте начнем!");
+                    runTest(message,"espano");
+                    isStart();
+                    break;
+                case "Помощь":
+                    onMainMenu(message, "Пока ничем не могу помочь.");
+                    break;
+                case "Помню":
+                    if (isStart){
+                        onTestMenu(message, "Очень хорошо!");
                         countWord();
-                        runTest(message);
-                        }
-                       else {
-                           wrongCommand(message);
-                       }
-                        break;
-                    case "Не помню":
-                       if (isStart){
-                            onTestMenu(message, "Плохо");
-                        runTest(message);
-                       }
-                       else{
-                           wrongCommand(message);
-                       }
-                        break;
-                    case "Закончить":
-                       if (isStart){
-                            onMainMenu(message, "Ну что ж, пора закругляться. Вы помните " + countWord + " слов(а)");
-                         isStart = false;
-                            countWord = 0;
-                       }
-                       else{
-                           wrongCommand(message);
-                       }
-                        break;
-                    default:
-                        onMainMenu(message, "Да-да?");
-                        break;
-                }
+                        runTest(message,"espano");
+                    }
+                    else {
+                        wrongCommand(message);
+                    }
+                    break;
+                case "Не помню":
+                    if (isStart){
+                        onTestMenu(message, "Плохо\n"  + "Это было слово: \n");
+                        runTest(message, "english");
+                        onTestMenu(message, "Поехали дальше! ");
+                        runTest(message,"espano");
+                    }
+                    else{
+                        wrongCommand(message);
+                    }
+                    break;
+                case "Закончить":
+                    if (isStart){
+                        onMainMenu(message, "Ну что ж, пора закругляться. Вы помните " + countWord + " слов(а)");
+                        isStart = false;
+                        countWord = 0;
+                    }
+                    else{
+                        onMainMenu(message, "Но мы ведь даже не начали! А вы уже закончить, закончить... :(");
+                    }
+                    break;
+                default:
+                    onMainMenu(message, "Да-да?");
+                    break;
             }
+        }
     }
-    private void runTest(Message message){
-            onTestMenu(message, randomEspanoWord());
+    private void runTest(Message message, String smthword){
+        words word = new words();
+        word.randomWord();
+        onTestMenu(message, word.getWord(smthword));
     }
     private void wrongCommand(Message message){
-            onMainMenu(message, "Вы хотите что-то поломать :(");
+        onMainMenu(message, "Вы хотите что-то поломать :(");
     }
     //подсчет верных слов
     private static Integer countWord(){
@@ -114,35 +118,35 @@ public class main extends TelegramLongPollingBot {
         return isStart;
     }
 
-//вовращает рандомное испанское слово
+    //вовращает рандомное испанское слово
     private static String randomEspanoWord() {
-            HashMap<String, String> cards = new HashMap<String, String>();
-            cards.put("hello","hola");
-            cards.put("goodbye","adiós");
-            cards.put("thank you","gracias");
-            cards.put("good","bueno");
-            cards.put("always","siempre");
+        HashMap<String, String> cards = new HashMap<String, String>();
+        cards.put("hello","hola");
+        cards.put("goodbye","adiós");
+        cards.put("thank you","gracias");
+        cards.put("good","bueno");
+        cards.put("always","siempre");
 
-            HashMap<Integer, String>  cardsNumber = new HashMap<Integer, String>();
-            int i=0;
-            for (String keyCards : cards.keySet()) {
-                cardsNumber.put(i, keyCards);
-                i++;
-            }
+        HashMap<Integer, String>  cardsNumber = new HashMap<Integer, String>();
+        int i=0;
+        for (String keyCards : cards.keySet()) {
+            cardsNumber.put(i, keyCards);
+            i++;
+        }
 
-           int wordNumber = (int) (Math.random()*cards.size());
+        int wordNumber = (int) (Math.random()*cards.size());
 
-            String englishWord = "";
-            String espanoWord = "";
+        String englishWord = "";
+        String espanoWord = "";
 
-            englishWord = cardsNumber.get(wordNumber);
-            espanoWord = cards.get(englishWord);
+        englishWord = cardsNumber.get(wordNumber);
+        espanoWord = cards.get(englishWord);
 
-            return espanoWord;
+        return espanoWord;
     }
 
 
-//клавиатуры
+    //клавиатуры
     private void onMainMenu(Message message, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
@@ -219,4 +223,3 @@ public class main extends TelegramLongPollingBot {
         }
     }
 }
-
