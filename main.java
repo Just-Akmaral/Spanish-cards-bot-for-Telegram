@@ -1,6 +1,7 @@
 package main;
 
 
+        import java.text.SimpleDateFormat;
         import java.util.*;
         import java.io.*;
 
@@ -40,6 +41,8 @@ public class main extends TelegramLongPollingBot {
 
     public static int countWord = 0;
     public static boolean isStart = false;
+    public static boolean isRemember = false;
+    public static HashMap<String, Integer> results = new HashMap<String, Integer>();
 
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
@@ -47,26 +50,25 @@ public class main extends TelegramLongPollingBot {
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
-                    onMainMenu(message, "Добро пожаловать!\n" //
-                            + "Комманды: \n" //
-                            + "Начать" + "\n" //
-                            + "Помощь" + "\n"//
+                    onMainMenu(message, "Добро пожаловать!\n"
+                            + "Комманды: \n"
+                            + "Результаты" + "\n"
                             + "\n" //
-                            + "Для удобства, используйте клавиатуру.\n"//
-                            + "Cделано с любовью и болью для экзамена.");
+                            + "Для удобства, используйте клавиатуру.\n");
                     break;
                 case "Начать":
                     onMainMenu(message, "Давайте начнем!");
                     runTest(message,"espano", "Начнем с простого");
                     isStart();
                     break;
-                case "Помощь":
-                    onMainMenu(message, "Пока ничем не могу помочь.");
+                case "Все результаты":
+                    onMainMenu(message, getResult());
                     break;
                 case "Помню":
                     if (isStart){
                         onTestMenu(message, "Очень хорошо!");
                         countWord();
+                        isRemember();
                         runTest(message,"espano", "А как насчет этого?");
                     }
                     else {
@@ -74,18 +76,23 @@ public class main extends TelegramLongPollingBot {
                     }
                     break;
                 case "Не помню":
-                    if (isStart){
+                    if (isStart) {
                         onTestMenu(message, "Плохо :(\n");
                         runTest(message, "english", "Это было слово");
                         runTest(message,"espano","Поехали дальше!");
+                        isRemember();
                     }
                     else{
                         wrongCommand(message);
                     }
                     break;
-                case "Закончить":
-                    if (isStart){
+                case "Закончить"://добавить проверку на нажатие кнопки помню/не помню
+                    if (isStart && isRemember){
                         onMainMenu(message, "Ну что ж, пора закругляться. Вы помните " + countWord + " слов(а)");
+                        long curTime = System.currentTimeMillis();
+                        Date curDate = new Date(curTime);
+                        String curStringDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(curTime);
+                        setResult(curStringDate, countWord);
                         isStart = false;
                         countWord = 0;
                     }
@@ -98,6 +105,23 @@ public class main extends TelegramLongPollingBot {
                     break;
             }
         }
+    }
+
+    //занесение результатов
+    public void setResult(String date, Integer count){
+        results.put(date,count);
+    }
+
+    //получение результатов
+    private static String getResult(){
+        // Получаем набор элементов
+        Set<Map.Entry<String, Integer>> set = results.entrySet();
+        String s = "Ваши результаты:" + "\n";
+        for (Map.Entry<String, Integer> me : set) {
+            s = s + me.getKey() + ": " + me.getValue() + "\n";
+        }
+       if (s.equals("Ваши результаты:" + "\n")){s = "Их нет";}
+        return s;
     }
 
     //получение рандомного слова и отправка сообщения
@@ -122,6 +146,11 @@ public class main extends TelegramLongPollingBot {
         isStart = true;
         return isStart;
     }
+    private static Boolean isRemember(){
+        isRemember = true;
+        return isRemember;
+    }
+
 
     //вовращает рандомное испанское слово
     private static String randomEspanoWord() {
@@ -174,7 +203,7 @@ public class main extends TelegramLongPollingBot {
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         // Добавляем кнопки во вторую строчку клавиатуры
 
-        keyboardSecondRow.add("Помощь");
+        keyboardSecondRow.add("Все результаты");
 
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
