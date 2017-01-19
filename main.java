@@ -57,7 +57,7 @@ public class main extends TelegramLongPollingBot {
                     break;
                 case "Начать":
                     onMainMenu(message, "Давайте начнем!");
-                    runTest(message,"espano");
+                    runTest(message,"espano", "Начнем с простого");
                     isStart();
                     break;
                 case "Помощь":
@@ -67,7 +67,7 @@ public class main extends TelegramLongPollingBot {
                     if (isStart){
                         onTestMenu(message, "Очень хорошо!");
                         countWord();
-                        runTest(message,"espano");
+                        runTest(message,"espano", "А как насчет этого?");
                     }
                     else {
                         wrongCommand(message);
@@ -75,10 +75,9 @@ public class main extends TelegramLongPollingBot {
                     break;
                 case "Не помню":
                     if (isStart){
-                        onTestMenu(message, "Плохо\n"  + "Это было слово: \n");
-                        runTest(message, "english");
-                        onTestMenu(message, "Поехали дальше! ");
-                        runTest(message,"espano");
+                        onTestMenu(message, "Плохо :(\n");
+                        runTest(message, "english", "Это было слово");
+                        runTest(message,"espano","Поехали дальше!");
                     }
                     else{
                         wrongCommand(message);
@@ -100,19 +99,25 @@ public class main extends TelegramLongPollingBot {
             }
         }
     }
-    private void runTest(Message message, String smthword){
+
+    //получение рандомного слова и отправка сообщения
+    private void runTest(Message message, String smthword, String text){
         words word = new words();
         word.randomWord();
-        onTestMenu(message, word.getWord(smthword));
+        onTestMenu(message, text + " " + word.getWord(smthword));
     }
+
     private void wrongCommand(Message message){
-        onMainMenu(message, "Вы хотите что-то поломать :(");
+        onMainMenu(message, "Сбой матрицы");
     }
+
     //подсчет верных слов
     private static Integer countWord(){
         countWord++;
         return countWord;
     }
+
+    //установка старта
     private static Boolean isStart(){
         isStart = true;
         return isStart;
@@ -144,7 +149,6 @@ public class main extends TelegramLongPollingBot {
 
         return espanoWord;
     }
-
 
     //клавиатуры
     private void onMainMenu(Message message, String text) {
@@ -179,7 +183,7 @@ public class main extends TelegramLongPollingBot {
         replyKeyboardMarkup.setKeyboard(keyboard);
 
         sendMessage.setChatId(message.getChatId().toString());
-        sendMessage.setReplyToMessageId(message.getMessageId());
+       // sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
             sendMessage(sendMessage);
@@ -214,7 +218,7 @@ public class main extends TelegramLongPollingBot {
         replyKeyboardMarkup.setKeyboard(keyboard);
 
         sendMessage.setChatId(message.getChatId().toString());
-        sendMessage.setReplyToMessageId(message.getMessageId());
+      //  sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
             sendMessage(sendMessage);
