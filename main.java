@@ -61,7 +61,7 @@ public class main extends TelegramLongPollingBot {
                     runTest(message,"espano", "Начнем с простого");
                     isStart();
                     break;
-                case "Все результаты":
+                case "Ваши результаты":
                     onMainMenu(message, getResult());
                     break;
                 case "Помню":
@@ -86,14 +86,15 @@ public class main extends TelegramLongPollingBot {
                         wrongCommand(message);
                     }
                     break;
-                case "Закончить"://добавить проверку на нажатие кнопки помню/не помню
-                    if (isStart && isRemember){
-                        onMainMenu(message, "Ну что ж, пора закругляться. Вы помните " + countWord + " слов(а)");
+                case "Закончить":
+                    if (isRemember){
+                        onMainMenu(message, "Ну что ж, пора закругляться. Вы помните " + countWord + " слов(а,о)");
                         long curTime = System.currentTimeMillis();
                         Date curDate = new Date(curTime);
                         String curStringDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(curTime);
                         setResult(curStringDate, countWord);
                         isStart = false;
+                        isRemember = false;
                         countWord = 0;
                     }
                     else{
@@ -116,11 +117,11 @@ public class main extends TelegramLongPollingBot {
     private static String getResult(){
         // Получаем набор элементов
         Set<Map.Entry<String, Integer>> set = results.entrySet();
-        String s = "Ваши результаты:" + "\n";
+        String s = "Ваши результаты:";
         for (Map.Entry<String, Integer> me : set) {
-            s = s + me.getKey() + ": " + me.getValue() + "\n";
+            s = s + "\n" + me.getKey() + ": " + me.getValue() + " слов(а,о)";
         }
-       if (s.equals("Ваши результаты:" + "\n")){s = "Их нет";}
+       if (s.equals("Ваши результаты:")){s = "Их нет";}
         return s;
     }
 
@@ -203,7 +204,7 @@ public class main extends TelegramLongPollingBot {
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         // Добавляем кнопки во вторую строчку клавиатуры
 
-        keyboardSecondRow.add("Все результаты");
+        keyboardSecondRow.add("Ваши результаты");
 
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
