@@ -45,20 +45,7 @@ public class main extends TelegramLongPollingBot {
     public static int countWord = 0;
     public static boolean isStart = false;
     public static boolean isRemember = false;
-    private static final String CREATE_QUERY = "CREATE TABLE EXAMPLE (RESULTS CLOB))";
 
-//    private void createDB(){
-//        try (Connection db = DriverManager.getConnection("jdbc:h2:mem:")) {
-//            try (Statement dataQuery = db.createStatement()) {
-//                dataQuery.execute(CREATE_QUERY);
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        } catch (SQLException ex) {
-//            System.out.println("Database select failure: "
-//                    + ex.getMessage());
-//        };
-//    }
 
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
@@ -71,10 +58,6 @@ public class main extends TelegramLongPollingBot {
                             + "Результаты" + "\n"
                             + "\n" //
                             + "Для удобства, используйте клавиатуру.\n");
-               //     results result = new results ();
-                //    result.createMap();
-                //  App app = new App ();
-             //      createDB();
                     break;
                 case "Начать":
                     onMainMenu(message, "Давайте начнем!");
@@ -82,10 +65,8 @@ public class main extends TelegramLongPollingBot {
                     isStart();
                     break;
                 case "Ваши результаты":
-                 //   setResultDay(getRecord());
-                //   App app1 = new App ();
-                  // onMainMenu(message, app1.getResults());
-                    onMainMenu(message, getRecord());
+                    FilesApp fileapp1 = new FilesApp();
+                    onMainMenu(message, fileapp1.getText());
                 break;
                 case "Помню":
                     if (isStart){
@@ -115,9 +96,9 @@ public class main extends TelegramLongPollingBot {
                         long curTime = System.currentTimeMillis();
                         Date curDate = new Date(curTime);
                         String curStringDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(curTime);
-                        //запись рез-та за 1 сеанс
                        setRecord(curStringDate, countWord);
-                  //      App app2 = new App ();//            app2.setResult1(countWord);
+                       FilesApp fileapp = new FilesApp();
+                        fileapp.setText(getRecord());
                         isStart = false;
                         isRemember = false;
                         countWord = 0;
@@ -132,12 +113,6 @@ public class main extends TelegramLongPollingBot {
             }
         }
     }
-//    //    //запись результата
-//    private void setResultDay(String s){
-//        App app = new App ();
-//        app.setResult(s);
-//    }
-
 //    //запись результата
     private void setRecord(String date, Integer countWord){
         results result = new results ();
