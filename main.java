@@ -1,9 +1,12 @@
 package main;
 
 
+        import java.sql.Connection;
+        import java.sql.DriverManager;
+        import java.sql.SQLException;
+        import java.sql.Statement;
         import java.text.SimpleDateFormat;
         import java.util.*;
-        import java.io.*;
 
 
         import org.telegram.telegrambots.ApiContextInitializer;
@@ -42,28 +45,48 @@ public class main extends TelegramLongPollingBot {
     public static int countWord = 0;
     public static boolean isStart = false;
     public static boolean isRemember = false;
-    public static HashMap<String, Integer> results = new HashMap<String, Integer>();
+    private static final String CREATE_QUERY = "CREATE TABLE EXAMPLE (RESULTS CLOB))";
+
+//    private void createDB(){
+//        try (Connection db = DriverManager.getConnection("jdbc:h2:mem:")) {
+//            try (Statement dataQuery = db.createStatement()) {
+//                dataQuery.execute(CREATE_QUERY);
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        } catch (SQLException ex) {
+//            System.out.println("Database select failure: "
+//                    + ex.getMessage());
+//        };
+//    }
 
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
-        //    boolean isStart = false;
         if (message != null && message.hasText()) {
             switch (message.getText()) {
                 case "/start":
                     onMainMenu(message, "Добро пожаловать!\n"
                             + "Комманды: \n"
+                            + "Начать" + "\n"
                             + "Результаты" + "\n"
                             + "\n" //
                             + "Для удобства, используйте клавиатуру.\n");
+               //     results result = new results ();
+                //    result.createMap();
+                //  App app = new App ();
+             //      createDB();
                     break;
                 case "Начать":
                     onMainMenu(message, "Давайте начнем!");
-                    runTest(message,"espano", "Начнем с простого");
+                    runTest(message, "espano", "Начнем с простого");
                     isStart();
                     break;
                 case "Ваши результаты":
-                    onMainMenu(message, getResult());
-                    break;
+                 //   setResultDay(getRecord());
+                //   App app1 = new App ();
+                  // onMainMenu(message, app1.getResults());
+                    onMainMenu(message, getRecord());
+                break;
                 case "Помню":
                     if (isStart){
                         onTestMenu(message, "Очень хорошо!");
@@ -92,7 +115,9 @@ public class main extends TelegramLongPollingBot {
                         long curTime = System.currentTimeMillis();
                         Date curDate = new Date(curTime);
                         String curStringDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(curTime);
-                        setResult(curStringDate, countWord);
+                        //запись рез-та за 1 сеанс
+                       setRecord(curStringDate, countWord);
+                  //      App app2 = new App ();//            app2.setResult1(countWord);
                         isStart = false;
                         isRemember = false;
                         countWord = 0;
@@ -107,22 +132,21 @@ public class main extends TelegramLongPollingBot {
             }
         }
     }
+//    //    //запись результата
+//    private void setResultDay(String s){
+//        App app = new App ();
+//        app.setResult(s);
+//    }
 
-    //занесение результатов
-    public void setResult(String date, Integer count){
-        results.put(date,count);
+//    //запись результата
+    private void setRecord(String date, Integer countWord){
+        results result = new results ();
+        result.setResult(date, countWord);
     }
 
-    //получение результатов
-    private static String getResult(){
-        // Получаем набор элементов
-        Set<Map.Entry<String, Integer>> set = results.entrySet();
-        String s = "Ваши результаты:";
-        for (Map.Entry<String, Integer> me : set) {
-            s = s + "\n" + me.getKey() + ": " + me.getValue() + " слов(а,о)";
-        }
-       if (s.equals("Ваши результаты:")){s = "Их нет";}
-        return s;
+    private static String getRecord(){
+        results result = new results ();
+        return result.getResults();
     }
 
     //получение рандомного слова и отправка сообщения
