@@ -19,11 +19,11 @@ public class results extends main {
    }
     public static String getResults(){
       Set<Map.Entry<String, Integer>> set = results.entrySet();
-      String s = "Ваши результаты:";
+      String s = "";
       for (Map.Entry<String, Integer> me : set) {
           s = s + "\n" + me.getKey() + ": " + me.getValue() + " слов(а,о)";
        }
-      if (s.equals("Ваши результаты:")){s = "Их пока нет";}
+    //  if (s.equals("-")){s = "Их пока нет";}
         return s;
     }
 }

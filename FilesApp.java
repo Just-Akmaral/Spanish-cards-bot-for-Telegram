@@ -9,7 +9,6 @@ public class FilesApp {
 
     public static void setText(String record) {
 
-
         try(FileWriter writer = new FileWriter("C:\\Study\\3 course\\5 semester\\java_applet\\bot_for_telegram\\notes3.txt", true))
         {
             // запись всей строки
@@ -27,7 +26,7 @@ public class FilesApp {
         }
     }
     public static String getText() {
-        String s="";
+        String s="Это было:";
         try(FileReader reader = new FileReader("C:\\Study\\3 course\\5 semester\\java_applet\\bot_for_telegram\\notes3.txt"))
         {
             // читаем посимвольно
@@ -42,7 +41,22 @@ public class FilesApp {
         }
         return s;
     }
+    public static void clearText() {
 
+        try (FileWriter writer = new FileWriter("C:\\Study\\3 course\\5 semester\\java_applet\\bot_for_telegram\\notes3.txt", false)) {
+            // запись всей строки
+            String text = "";
+            writer.write(text);
+            // запись по символам
+          writer.append(' ');
+            writer.append(' ');
+
+            writer.flush();
+        } catch (IOException ex) {
+
+            System.out.println(ex.getMessage());
+        }
+    }
 
 }
 

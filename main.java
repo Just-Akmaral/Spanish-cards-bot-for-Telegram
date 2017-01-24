@@ -45,7 +45,7 @@ public class main extends TelegramLongPollingBot {
     public static int countWord = 0;
     public static boolean isStart = false;
     public static boolean isRemember = false;
-
+    FilesApp fileapp0 = new FilesApp();
 
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
@@ -53,11 +53,13 @@ public class main extends TelegramLongPollingBot {
             switch (message.getText()) {
                 case "/start":
                     onMainMenu(message, "Добро пожаловать!\n"
-                            + "Комманды: \n"
+                            + "Команды: \n"
                             + "Начать" + "\n"
-                            + "Результаты" + "\n"
+                            + "Ваши результаты" + "\n"
                             + "\n" //
-                            + "Для удобства, используйте клавиатуру.\n");
+                            + "Для удобства используйте клавиатуру.\n");
+                    FilesApp fileapp0 = new FilesApp();
+                    fileapp0.clearText();
                     break;
                 case "Начать":
                     onMainMenu(message, "Давайте начнем!");
@@ -81,8 +83,7 @@ public class main extends TelegramLongPollingBot {
                     break;
                 case "Не помню":
                     if (isStart) {
-                        onTestMenu(message, "Плохо :(\n");
-                        runTest(message, "english", "Это было слово");
+                        runTest(message, "english", "Плохо :( Это было слово");
                         runTest(message,"espano","Поехали дальше!");
                         isRemember();
                     }
@@ -96,9 +97,11 @@ public class main extends TelegramLongPollingBot {
                         long curTime = System.currentTimeMillis();
                         Date curDate = new Date(curTime);
                         String curStringDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(curTime);
-                       setRecord(curStringDate, countWord);
-                       FilesApp fileapp = new FilesApp();
-                        fileapp.setText(getRecord());
+                        setRecord(curStringDate, countWord);
+
+                        FilesApp fileapp = new FilesApp();
+                        fileapp.setText(curStringDate + " " + countWord+ " слов(а,о)");
+
                         isStart = false;
                         isRemember = false;
                         countWord = 0;
@@ -113,7 +116,7 @@ public class main extends TelegramLongPollingBot {
             }
         }
     }
-//    //запись результата
+  //запись результата
     private void setRecord(String date, Integer countWord){
         results result = new results ();
         result.setResult(date, countWord);
@@ -150,7 +153,6 @@ public class main extends TelegramLongPollingBot {
         isRemember = true;
         return isRemember;
     }
-
 
     //вовращает рандомное испанское слово
     private static String randomEspanoWord() {

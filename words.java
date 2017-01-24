@@ -10,7 +10,6 @@ public class words extends main{
     public static String englishWord = "";
     public static String espanoWord = "";
 
-    //вовращает рандомное испанское слово
     public void randomWord() {
 
         HashMap<String, String> cards = new HashMap<String, String>();
