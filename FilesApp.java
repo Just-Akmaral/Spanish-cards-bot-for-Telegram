@@ -26,7 +26,7 @@ public class FilesApp {
         }
     }
     public static String getText() {
-        String s="Это было:";
+        String s="<3";
         try(FileReader reader = new FileReader("C:\\Study\\3 course\\5 semester\\java_applet\\bot_for_telegram\\notes3.txt"))
         {
             // читаем посимвольно
